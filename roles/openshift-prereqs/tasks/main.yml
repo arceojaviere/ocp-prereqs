@@ -1,0 +1,20 @@
+---
+
+- name: Install prerequisites
+  yum:
+    name: "wget,git,net-tools,bind-utils,yum-utils,iptables-services,bridge-utils,bash-completion,kexec-tools,sos,python-ipaddress,psacct,docker-1.13.1"
+    state: "present"
+
+- name: Configure Docker storage - File configuration
+  template:
+    src: docker-storage-setup.j2
+    dest: /etc/sysconfig/docker-storage-setup
+
+- name: Configure docker storage - Run setup script
+  command: "docker-storage-setup"
+
+- name: Enable and start Docker
+  systemd:
+    name: docker
+    enabled: true
+    state: started

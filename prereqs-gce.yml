@@ -1,0 +1,30 @@
+---
+- name: Enabling Subscription Manager in GCE host
+  hosts: all
+  tasks:
+    - name: Installing google-rhui-client-rhel7
+      command: "yum -y --disablerepo=rhui* install google-rhui-client-rhel7"
+    - name: Installing subscription-manager
+      yum:
+        name: "subscription-manager"
+        state: "present"
+    - name: Subscribing hosts and enabling repos
+      import_role:
+        name: "subscribe"
+      vars:
+        - subscription_manager_user: "{{ subscription_user }}"
+        - subscription_manager_password: "{{ subscription_password }}"
+        - subscription_manager_pools: "{{ subscription_pools }}"
+        - yum_repos_enable:
+          - "rhel-7-server-rpms"
+          - "rhel-7-server-extras-rpms"
+          - "rhel-7-fast-datapath-rpms"
+          - "rhel-7-server-ansible-2.4-rpms"
+          - "rhel-7-server-ose-3.9-rpms"
+
+- name: Installing prerequisites
+  hosts: nodes
+  tasks:
+    - import_role:
+        name: openshift-prereqs
+        

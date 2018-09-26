@@ -1,0 +1,22 @@
+---
+
+- name: Subscribe host
+  redhat_subscription:
+    username: "{{ subscription_manager_user }}"
+    password: "{{ subscription_manager_password }}"
+    pool_ids: "{{ subscription_manager_pools }}"
+    state: present
+  ignore_errors: True
+  when: subscribe_host == True
+
+- name: Configure repositories - Disable all repos
+  command: "subscription-manager repos --disable=\"*\""
+
+- name: Configure repositories - Enable repo
+  command: "subscription-manager repos --enable=\"{{ item }}\""
+  with_items: "{{ yum_repos_enable }}"
+    
+- name: Update OS
+  yum:
+    name: "*"
+    state: "latest"

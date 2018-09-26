@@ -1,0 +1,7 @@
+---
+
+- hosts: nodes
+  tasks:
+    - name: Unsubscribe
+      redhat_subscription:
+        state: absent

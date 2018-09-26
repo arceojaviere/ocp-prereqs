@@ -1,0 +1,12 @@
+[nodes:vars]
+ansible_user=root
+
+subscription_user=""
+subscription_password=""
+subscription_pools=""
+
+
+[nodes]
+master.openshift
+slave1.openshift
+slave2.openshift

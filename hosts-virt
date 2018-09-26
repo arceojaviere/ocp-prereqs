@@ -1,0 +1,106 @@
+[OSEv3:children]
+nodes
+masters
+etcd
+lb
+new_nodes
+glusterfs
+glusterfs_registry
+
+[OSEv3:vars]
+subscribe_host=False
+subscription_user=""
+subscription_password=""
+subscription_pools=""
+
+openshift_master_default_subdomain=apps.openshift.lab
+#ansible_ssh_user=openshift
+ansible_ssh_user=root
+#ansible_become=true
+openshift_master_cluster_hostname=lb-1.openshift.lab
+openshift_master_cluster_public_hostname=console.openshift.lab
+openshift_override_hostname_check=true
+deployment_type=openshift-enterprise
+openshift_master_cluster_method=native
+#osm_cluster_network_cidr=10.192.0.0/14
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+openshift_master_identity_providers=[{'name': 'htpasswd_auth','login': 'true', 'challenge': 'true', 'kind':'HTPasswdPasswordIdentityProvider', 'filename':'/etc/origin/master/htpasswd'}]
+openshift_disable_check=memory_availability,disk_availability
+
+#Gluster
+openshift_storage_glusterfs_is_native=true
+openshift_storage_glusterfs_storageclass=true
+openshift_storage_glusterfs_storageclass_default=true
+openshift_storage_glusterfs_heketi_is_native=true
+openshift_storage_glusterfs_registry_block_deploy=true
+
+openshift_hosted_registry_storage_kind=glusterfs
+
+oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_examples_modify_imagestreams=true
+
+
+#Metrics
+#openshift_metrics_cassandra_pvc_size=10Gi
+#openshift_metrics_cassandra_storage_type=pv
+openshift_metrics_storage_kind=dynamic
+openshift_metrics_hawkular_hostname=hawkular-metrics.apps.openshift.lab
+openshift_metrics_cassandra_nodeselector={"region":"infra"}
+openshift_metrics_hawkular_nodeselector={"region":"infra"}
+openshift_metrics_heapster_nodeselector={"region":"infra"}
+openshift_metrics_cassanda_pvc_storage_class_name="glusterfs-registry-block"
+
+#Logging
+openshift_logging_eventrouter_nodeselector={"region":"infra"}
+openshift_logging_curator_nodeselector={"region":"infra"}
+openshift_logging_kibana_nodeselector={"region":"infra"}
+openshift_logging_es_nodeselector={"region":"infra"}
+openshift_logging_kibana_hostname=kibana.apps.openshift.lab
+openshift_logging_es_pvc_size=10Gi
+openshift_logging_purge_logging=True
+openshift_logging_es_pvc_storage_class_name="glusterfs-registry-block"
+openshift_logging_es_pvc_dynamic=True
+
+
+[nodes]
+master-1.openshift.lab  openshift_ip=10.128.0.2 openshift_hostname=master-1.openshift.lab connect_to=master1.openshift.lab openshift_schedulable=True
+master-2.openshift.lab  openshift_ip=10.128.0.3 openshift_hostname=master-2.openshift.lab connect_to=master2.openshift.lab openshift_schedulable=True
+master-3.openshift.lab  openshift_ip=10.128.0.4 openshift_hostname=master-3.openshift.lab connect_to=master3.openshift.lab openshift_schedulable=True
+infra-1.openshift.lab  openshift_ip=10.128.0.5 openshift_hostname=infra-1.openshift.lab connect_to=infra1.openshift.lab openshift_node_labels="{'region': 'infra'}" openshift_schedulable=True
+infra-2.openshift.lab  openshift_ip=10.128.0.6 openshift_hostname=infra-2.openshift.lab connect_to=infra2.openshift.lab openshift_node_labels="{'region': 'infra'}" openshift_schedulable=True
+node-1.openshift.lab  openshift_ip=10.128.0.7 openshift_hostname=node-1.openshift.lab connect_to=node1.openshift.lab openshift_schedulable=True
+node-2.openshift.lab  openshift_ip=10.128.0.8 openshift_hostname=node-2.openshift.lab connect_to=node2.openshift.lab openshift_schedulable=True
+node-3.openshift.lab  openshift_ip=10.128.0.9 openshift_hostname=node-3.openshift.lab connect_to=node3.openshift.lab openshift_schedulable=True
+node-4.openshift.lab  openshift_ip=10.128.0.10 openshift_hostname=node-4.openshift.lab connect_to=node4.openshift.lab openshift_schedulable=True
+gluster-1.openshift.lab  openshift_ip=10.128.0.11 glusterfs_ip=10.128.0.11 openshift_hostname=gluster-1.openshift.lab connect_to=gluster-1.openshift.lab glusterfs_devices='["/dev/sdc"]'
+gluster-2.openshift.lab  openshift_ip=10.128.0.12 glusterfs_ip=10.128.0.12 openshift_hostname=gluster-2.openshift.lab connect_to=gluster-2.openshift.lab glusterfs_devices='["/dev/sdc"]'
+gluster-3.openshift.lab  openshift_ip=10.128.0.13 glusterfs_ip=10.128.0.13 openshift_hostname=gluster-3.openshift.lab connect_to=gluster-3.openshift.lab glusterfs_devices='["/dev/sdc"]'
+
+[masters]
+master-1.openshift.lab  openshift_ip=10.128.0.2 openshift_hostname=master-1.openshift.lab connect_to=master1.openshift.lab openshift_schedulable=True
+master-2.openshift.lab  openshift_ip=10.128.0.3 openshift_hostname=master-2.openshift.lab connect_to=master2.openshift.lab openshift_schedulable=True
+master-3.openshift.lab  openshift_ip=10.128.0.4 openshift_hostname=master-3.openshift.lab connect_to=master3.openshift.lab openshift_schedulable=True
+
+
+[etcd]
+master-1.openshift.lab  openshift_ip=10.128.0.2 openshift_hostname=master-1.openshift.lab connect_to=master1.openshift.lab openshift_schedulable=True
+master-2.openshift.lab  openshift_ip=10.128.0.3 openshift_hostname=master-2.openshift.lab connect_to=master2.openshift.lab openshift_schedulable=True
+master-3.openshift.lab  openshift_ip=10.128.0.4 openshift_hostname=master-3.openshift.lab connect_to=master3.openshift.lab openshift_schedulable=True
+
+[lb]
+lb-1.openshift.lab  openshift_ip=10.128.0.14 openshift_hostname=lb-1.openshift.lab connect_to=lb-1.openshift.lab openshift_schedulable=False
+
+[glusterfs]
+gluster-1.openshift.lab  openshift_ip=10.128.0.11 glusterfs_ip=10.128.0.11 openshift_hostname=gluster-1.openshift.lab connect_to=gluster-1.openshift.lab glusterfs_devices='["/dev/sdc"]'
+gluster-2.openshift.lab  openshift_ip=10.128.0.12 glusterfs_ip=10.128.0.12 openshift_hostname=gluster-2.openshift.lab connect_to=gluster-2.openshift.lab glusterfs_devices='["/dev/sdc"]'
+gluster-3.openshift.lab  openshift_ip=10.128.0.13 glusterfs_ip=10.128.0.13 openshift_hostname=gluster-3.openshift.lab connect_to=gluster-3.openshift.lab glusterfs_devices='["/dev/sdc"]'
+
+
+[glusterfs_registry]
+gluster-1.openshift.lab  openshift_ip=10.128.0.11 glusterfs_ip=10.128.0.11 openshift_hostname=gluster-1.openshift.lab connect_to=gluster-1.openshift.lab glusterfs_devices='["/dev/sdc"]'
+gluster-2.openshift.lab  openshift_ip=10.128.0.12 glusterfs_ip=10.128.0.12 openshift_hostname=gluster-2.openshift.lab connect_to=gluster-2.openshift.lab glusterfs_devices='["/dev/sdc"]'
+gluster-3.openshift.lab  openshift_ip=10.128.0.13 glusterfs_ip=10.128.0.13 openshift_hostname=gluster-3.openshift.lab connect_to=gluster-3.openshift.lab glusterfs_devices='["/dev/sdc"]'
+
+
+[new_nodes]
+
